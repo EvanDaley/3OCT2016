@@ -1,0 +1,7 @@
+Create weapons
+Create path for movement
+Create enemies
+Let the player fire weapon
+Create UI for health
+Create barriers
+Add lots of cool little details
