@@ -24,9 +24,9 @@ public class ScoreKeeper : MonoBehaviour {
 
 	void Start () 
 	{
-		// reset playerprefs
-		PlayerPrefs.SetInt ("cash", 0);
-		PlayerPrefs.SetInt ("record", 0);
+		// reset playerprefs for testing
+		//PlayerPrefs.SetInt ("cash", 0);
+		//PlayerPrefs.SetInt ("record", 0);
 
 		cash = PlayerPrefs.GetInt ("cash", 0);
 		record = PlayerPrefs.GetInt ("record", 0);
@@ -50,9 +50,24 @@ public class ScoreKeeper : MonoBehaviour {
 		PlayerPrefs.SetInt ("record", record);
 	}
 
+	public void SpendCash(int amount)
+	{
+		cash -= amount;
+	}
+
 	public void PushButton()
 	{
 		AddScore (buttonMultiplier);
+	}
+
+	public void UpgradeButton()
+	{
+		if (cash >= ButtonCost)
+		{
+			SpendCash (ButtonCost);
+			buttonMultiplier = buttonMultiplier * 2;
+			buttonUpgradeCostFactor += .5f;
+		}
 	}
 
 	public int Score
@@ -67,6 +82,11 @@ public class ScoreKeeper : MonoBehaviour {
 
 	public int ButtonCost
 	{
+		get{ return (int)(buttonUpgradeCostFactor * buttonMultiplier); }
+	}
 
+	public int ButtonWorth
+	{
+		get{ return (int)(buttonMultiplier); }
 	}
 }
