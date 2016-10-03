@@ -7,15 +7,13 @@ public class ScoreKeeper : MonoBehaviour {
 	public int scoreIntervalAmount = 1;		// how many points we add every x seconds (where x is scoreBoostInterval)
 	private float scoreBoostCooldown;		// a timer set based on scoreBoostInterval. See update method. 
 
-	private bool freezeScore = false;		// freeze the score when the player dies
-
 	public static ScoreKeeper Instance;		// a reference to this singleton
 	private int cash;						// current score of player
 	private int record;						// the highest recorded score of the player
 
 	// cash game variables
-	public int buttonMultiplier = 1;
-	public float buttonUpgradeCostFactor = 1f;
+	public float mult = 1;
+	public float costFactor = 1f;
 
 	void Awake()
 	{
@@ -25,11 +23,15 @@ public class ScoreKeeper : MonoBehaviour {
 	void Start () 
 	{
 		// reset playerprefs for testing
-		//PlayerPrefs.SetInt ("cash", 0);
-		//PlayerPrefs.SetInt ("record", 0);
+//		PlayerPrefs.SetInt ("cash", 0);
+//		PlayerPrefs.SetInt ("record", 0);
+//		PlayerPrefs.SetFloat ("mult", 1);
+//		PlayerPrefs.SetFloat ("costFactor", 12);
 
 		cash = PlayerPrefs.GetInt ("cash", 0);
 		record = PlayerPrefs.GetInt ("record", 0);
+		mult = PlayerPrefs.GetFloat ("mult", 1);
+		costFactor = PlayerPrefs.GetFloat ("costFactor", 1);
 	}
 
 	void Update()
@@ -37,7 +39,7 @@ public class ScoreKeeper : MonoBehaviour {
 		if (Time.time > scoreBoostCooldown)
 		{
 			scoreBoostCooldown = Time.time + scoreBoostInterval;
-			AddScore (buttonMultiplier);
+			AddScore ((int)Mathf.Floor(mult));
 		}
 	}
 
@@ -57,7 +59,7 @@ public class ScoreKeeper : MonoBehaviour {
 
 	public void PushButton()
 	{
-		AddScore (buttonMultiplier);
+		AddScore ((int)Mathf.Floor(mult));
 	}
 
 	public void UpgradeButton()
@@ -65,8 +67,11 @@ public class ScoreKeeper : MonoBehaviour {
 		if (cash >= ButtonCost)
 		{
 			SpendCash (ButtonCost);
-			buttonMultiplier = buttonMultiplier * 2;
-			buttonUpgradeCostFactor += .5f;
+			mult = mult * 1.2f + 1;
+			costFactor += .6f;
+
+			PlayerPrefs.SetFloat ("mult", mult);
+			PlayerPrefs.SetFloat ("costFactor", costFactor);
 		}
 	}
 
@@ -82,11 +87,11 @@ public class ScoreKeeper : MonoBehaviour {
 
 	public int ButtonCost
 	{
-		get{ return (int)(buttonUpgradeCostFactor * buttonMultiplier); }
+		get{ return (int)(costFactor * mult); }
 	}
 
 	public int ButtonWorth
 	{
-		get{ return (int)(buttonMultiplier); }
+		get{ return (int)(Mathf.Floor(mult)); }
 	}
 }
